@@ -1,0 +1,58 @@
+name: Apptainer Build Deploy
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: main
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    name: Build and Deploy 'Tainer
+    steps:
+      - name: Install Apptainer
+        uses: uw-psych/apptainer-actions/setup@main
+      
+      - name: Clear disk space
+        uses: uw-psych/apptainer-actions/make-disk-space@main
+
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set tag
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
+            case "${GITHUB_REF_NAME:-}" in
+              v?*) IMAGE_VERSION="${GITHUB_REF_NAME#v}";;
+              *) IMAGE_VERSION="latest";;
+            esac
+            echo "IMAGE_VERSION=${IMAGE_VERSION}" >> "${GITHUB_ENV}"
+          else
+            echo "IMAGE_VERSION=dev" >> "${GITHUB_ENV}"
+          fi
+
+      - name: Build and push ECDC-stack image
+        uses: uw-psych/apptainer-actions/build-and-push@main
+        with:
+          deffile: ecdc-stack.def
+          name: ecdc-stack
+          image-version: ${{ env.IMAGE_VERSION }}
+          
+      - name: Build and push splitrun image
+        uses: uw-psych/apptainer-actions/build-and-push@main
+        with:
+          deffile: splitrun.def
+          name: splitrun
+          image-version: ${{ env.IMAGE_VERSION }}
+
+      - name: Build and push Kafka server image
+        uses: uw-psych/apptainer-actions/build-and-push@main
+        with:
+          deffile: kafka.def
+          name: kafka
+          image-version: ${{ env.IMAGE_VERSION }}
