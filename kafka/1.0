@@ -8,7 +8,7 @@ set OPTIONS {broker:,controller:}
 set SHORTOPTIONS {b:,c:}
 switch -- [module-info shelltype] {
     {sh} {
-        set startfunc {
+        set startfunc [format {
 	! PARSED=$(getopt --options=$SHORTOPTIONS --longoptions=$OPTIONS --name "start-kafka" -- "$@")
 	eval set -- "$PARSED"
 	[ -z ${BROKER+x} ] && broker="9092" || broker="${BROKER}"
@@ -21,11 +21,9 @@ switch -- [module-info shelltype] {
 			*) echo "Programming error"; exit 3 ;;
 		esac
 	done
-	apptainer instance run --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writeable-tmpfs $tainer $instance
-	}
-	set stopfunc {
-	apptainer instance stop $instance
-	}
+	apptainer instance run --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
+	} $tainer $instance]
+	set stopfunc [format "apptainer instance stop %s" $instance]
     }
 }
 # define function if current shell supports shell function
