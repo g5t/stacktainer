@@ -1,0 +1,31 @@
+#%Module
+
+# this should be the absolute path to the image file, to allow alias-use from anywhere
+set tainer [format {%s/stack-tainer-splitrun_2.0.sif} [pwd]]
+
+proc make_alias {to} {
+  global tainer
+  set-alias $to [format {apptainer exec %s %s} $tainer $to]
+}
+
+# only expose a subset of the binaries/python-entrypoints
+# defined in the included programs
+set expose [list\
+python \
+mcstas-antlr \
+mccode-antlr \
+mcrun-antlr \
+splitrun-nexus \
+mp-epics-update \
+mp-register-topics \
+mp-writer-list \
+mp-writer-kill \
+mp-writer-killall \
+mccode-to-kafka \
+restage\
+splitrun\
+]
+
+foreach name $expose {
+  make_alias $name
+}
