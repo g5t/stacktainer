@@ -13,7 +13,7 @@ Images are defined and built in their associated repositories
 Built images are hosted by Github, and can be retrieved via, e.g.,
 
 ```cmd
-apptainer pull oras://ghcr.io/g5t/stack-tainer-splitrun/stack-tainer-splitrun:2.0
+apptainer pull oras://ghcr.io/g5t/stack-tainer-splitrun/stack-tainer-splitrun:2.2
 apptainer pull oras://ghcr.io/g5t/stack-tainer-kafka/stack-tainer-kafka:1.0
 ```
 
@@ -22,7 +22,7 @@ The modulefile defined in this repository is intended to be the gateway to _usin
 
 ```cmd
 module load ./kafka/1.0
-module load ./splitrun/2.0
+module load ./splitrun/2.2
 ```
 
 The `kafka` module file provides two commands (under `sh`-like shells only, at the moment) to `start-kafka` and `stop-kafka`.
