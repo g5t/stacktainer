@@ -2,15 +2,13 @@
 
 variable thisLocation [file normalize [info script]]
 proc getResourcePath {resource} {
-    variable thisLocation
-    set loc [file dirname $thisLocation]
-    return "${loc}/${resource}"
+  return "/visa/apps/containers/bin/stacktainer/${resource}"
 }
 proc getImagePath {} {
-    variable thisLocation
-    set ver [file tail $thisLocation]
-    set name [file tail [file dirname $thisLocation]]
-    return [getResourcePath "stacktainer-${name}_${ver}.sif"]
+  variable thisLocation
+  set ver [file tail $thisLocation]
+  set name [file tail [file dirname $thisLocation]]
+  return [getResourcePath "stacktainer-${name}_${ver}.sif"]
 }
 
 set tainer [getImagePath]
@@ -20,24 +18,24 @@ set instance kafka-tainer
 set OPTIONS {broker:,controller:}
 set SHORTOPTIONS {b:,c:}
 switch -- [module-info shelltype] {
-    {sh} {
-        set startfunc [format {
-	! PARSED=$(getopt --options=$SHORTOPTIONS --longoptions=$OPTIONS --name "start-kafka" -- "$@")
-	eval set -- "$PARSED"
-	[ -z ${BROKER+x} ] && broker="9092" || broker="${BROKER}"
-	[ -z ${CONTROLLER+x} ] && controller="9093" || controller="${CONTROLLER}"
-	while true; do
-		case "$1" in
-			-b|--broker) broker="$2"; shift 2 ;;
-			-c|--controller) controller="$2"; shift 2 ;;
-			--) shift; break ;;
-			*) echo "Programming error"; exit 3 ;;
-		esac
-	done
-	apptainer instance run --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
-	} $tainer $instance]
-	set stopfunc [format "apptainer instance stop %s" $instance]
-    }
+{sh} {
+  set startfunc [format {
+  ! PARSED=$(getopt --options=$SHORTOPTIONS --longoptions=$OPTIONS --name "start-kafka" -- "$@")
+  eval set -- "$PARSED"
+  [ -z ${BROKER+x} ] && broker="9092" || broker="${BROKER}"
+  [ -z ${CONTROLLER+x} ] && controller="9093" || controller="${CONTROLLER}"
+  while true; do
+    case "$1" in
+      -b|--broker) broker="$2"; shift 2 ;;
+      -c|--controller) controller="$2"; shift 2 ;;
+      --) shift; break ;;
+      *) echo "Programming error"; exit 3 ;;
+    esac
+  done
+  apptainer instance run --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
+  } $tainer $instance]
+  set stopfunc [format "apptainer instance stop %s" $instance]
+  }
 }
 # define function if current shell supports shell function
 if {[info exists startfunc]} {
