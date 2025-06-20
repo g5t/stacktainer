@@ -1,7 +1,19 @@
 #%Module
 
-# this should be the absolute path to the image file, to allow alias-use from anywhere
-set tainer [format {%s/stack-tainer-splitrun_2.2.sif} [pwd]]
+variable thisLocation [file normalize [info script]]
+proc getResourcePath {resource} {
+    variable thisLocation
+    set loc [file dirname $thisLocation]
+    return "${loc}/${resource}"
+}
+proc getImagePath {} {
+    variable thisLocation
+    set ver [file tail $thisLocation]
+    set name [file tail [file dirname $thisLocation]]
+    return [getResourcePath "stack-tainer-${name}_${ver}.sif"]
+}
+# the absolute path to the image file, to allow alias-use from anywhere
+set tainer [getImagePath]
 
 proc make_alias {to} {
   global tainer

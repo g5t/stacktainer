@@ -1,6 +1,19 @@
 #%Module
 
-set tainer {stack-tainer-kafka_1.0.sif}
+variable thisLocation [file normalize [info script]]
+proc getResourcePath {resource} {
+    variable thisLocation
+    set loc [file dirname $thisLocation]
+    return "${loc}/${resource}"
+}
+proc getImagePath {} {
+    variable thisLocation
+    set ver [file tail $thisLocation]
+    set name [file tail [file dirname $thisLocation]]
+    return [getResourcePath "stack-tainer-${name}_${ver}.sif"]
+}
+
+set tainer [getImagePath]
 set instance kafka-tainer
 
 # define function content depending on current shell family
