@@ -13,16 +13,16 @@ Images are defined and built in their associated repositories
 Built images are hosted by Github, and can be retrieved via, e.g.,
 
 ```cmd
-apptainer pull oras://ghcr.io/g5t/stacktainer-splitrun/stacktainer-splitrun:2.2
-apptainer pull oras://ghcr.io/g5t/stacktainer-kafka/stacktainer-kafka:1.0
+apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:3.0
+apptainer pull oras://ghcr.io/g5t/stacktainer/kafka:2.0
 ```
 
 # Use
 The modulefile defined in this repository is intended to be the gateway to _using_ the full stack `splitrun`.
 
 ```cmd
-module load ./kafka/1.0
-module load ./splitrun/2.2
+module load ./kafka/2.0
+module load ./splitrun/3.0
 ```
 
 The `kafka` module file provides two commands (under `sh`-like shells only, at the moment) to `start-kafka` and `stop-kafka`.
