@@ -1,4 +1,4 @@
-# stack-tainer 
+# stacktainer 
 ECDC stack + McCode-Plumber apptainer images
 
 # Images
@@ -6,15 +6,15 @@ Images are defined and built in their associated repositories
 
 | image | repository |
 |-------|------------|
-| ECDC binaries | [stack-tainer-ecdc](https://github.com/g5t/stack-tainer-ecdc) |
-| ECDC binaries + McCode-Plumber | [stack-tainer-splitrun](https://github.com/g5t/stack-tainer-splitrun) |
-| temporary Kafka server | [stack-tainer-kafka](https://github.com/g5t/stack-tainer-kafka) |
+| ECDC binaries | [stacktainer-ecdc](https://github.com/g5t/stacktainer-ecdc) |
+| ECDC binaries + McCode-Plumber | [stacktainer-splitrun](https://github.com/g5t/stacktainer-splitrun) |
+| temporary Kafka server | [stacktainer-kafka](https://github.com/g5t/stacktainer-kafka) |
 
 Built images are hosted by Github, and can be retrieved via, e.g.,
 
 ```cmd
-apptainer pull oras://ghcr.io/g5t/stack-tainer-splitrun/stack-tainer-splitrun:2.2
-apptainer pull oras://ghcr.io/g5t/stack-tainer-kafka/stack-tainer-kafka:1.0
+apptainer pull oras://ghcr.io/g5t/stacktainer-splitrun/stacktainer-splitrun:2.2
+apptainer pull oras://ghcr.io/g5t/stacktainer-kafka/stacktainer-kafka:1.0
 ```
 
 # Use
