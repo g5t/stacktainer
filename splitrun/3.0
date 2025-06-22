@@ -2,7 +2,7 @@
 
 variable thisLocation [file normalize [info script]]
 proc getResourcePath {resource} {
-  return "/visa/apps/containers/bin/stacktainer/${resource}"
+  return "/apps/containers/bin/stacktainer/${resource}"
 }
 proc getImagePath {} {
   variable thisLocation
