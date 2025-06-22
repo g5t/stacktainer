@@ -8,7 +8,7 @@ proc getImagePath {} {
   variable thisLocation
   set ver [file tail $thisLocation]
   set name [file tail [file dirname $thisLocation]]
-  return [getResourcePath "stacktainer-${name}_${ver}.sif"]
+  return [getResourcePath "${name}_${ver}.sif"]
 }
 
 set tainer [getImagePath]

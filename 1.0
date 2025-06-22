@@ -1,0 +1,13 @@
+#%Module
+
+proc ModulesHelp {} {
+  puts stderror "This module provides access to the stacktainer collection"
+  puts stderror "Version: v1.0"
+}
+
+module-whatis "stacktainer (Kafka + ECDC stack + McCode Plumber) via Apptainer"
+module-whatis "URL: https://github.com/g5t/stacktainer"
+
+
+module load kafka/1.0
+module load splitrun/3.0
