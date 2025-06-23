@@ -1,0 +1,57 @@
+#%Module
+
+variable thisLocation [file normalize [info script]]
+proc getResourcePath {resource} {
+  return "/apps/containers/bin/stacktainer/${resource}"
+}
+proc getImagePath {} {
+  variable thisLocation
+  set ver [file tail $thisLocation]
+  set name [file tail [file dirname $thisLocation]]
+  return [getResourcePath "${name}_${ver}.sif"]
+}
+# the absolute path to the image file, to allow alias-use from anywhere
+set tainer [getImagePath]
+
+proc app_flags {} {
+  set flag {--env RESTAGE_FIXED=${RESTAGE_FIXED}}
+  if { [info exists ::env(RESTAGE_FIXED)] } {
+    set flag [format {--env RESTAGE_FIXED=%s} $::env(RESTAGE_FIXED)]
+  }
+  if { [info exists ::env(BIND)] } {
+    set flag [format {%s --bind %s} $flag $::env(BIND)]
+  }
+  return $flag
+}
+
+proc make_alias {to} {
+  global tainer
+  set-alias $to [format {apptainer exec %s %s %s} [app_flags] $tainer $to]
+}
+
+# only expose a subset of the binaries/python-entrypoints
+# defined in the included programs
+set expose [list\
+  python \
+  mcstas-antlr \
+  mccode-antlr \
+  mcrun-antlr \
+  splitrun-nexus \
+  mp-epics-update \
+  mp-register-topics \
+  mp-writer-list \
+  mp-writer-kill \
+  mp-writer-killall \
+  mccode-to-kafka \
+  splitrun \
+  mcpltool \
+  mcpl-config \
+  ncrystal-mcstasunion \
+  ncrystal-config \
+  readout-config \
+  readout-replay \
+]
+
+foreach name $expose {
+  make_alias $name
+}
