@@ -2,7 +2,7 @@
 
 proc ModulesHelp {} {
   puts stderror "This module provides access to the stacktainer collection"
-  puts stderror "Version: v1.0"
+  puts stderror "Version: v1.1"
 }
 
 module-whatis "stacktainer (Kafka + ECDC stack + McCode Plumber) via Apptainer"
@@ -11,5 +11,5 @@ module-whatis "URL: https://github.com/g5t/stacktainer"
 setenv --set-if-undef RESTAGE_FIXED /dmsc/bifrost/restage
 setenv --set-if-undef BIND /run/user,/scratch,/ess,/dmsc
 
-module load kafka/2.0
-module load splitrun/4.0
+module load kafka/3.0
+module load splitrun/5.0

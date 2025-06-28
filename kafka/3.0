@@ -35,10 +35,14 @@ switch -- [module-info shelltype] {
   apptainer instance run --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
   } $tainer $instance]
   set stopfunc [format "apptainer instance stop %s" $instance]
+  set execfunc [format "apptainer instance instance://%s" $instance]
   }
 }
 # define function if current shell supports shell function
 if {[info exists startfunc]} {
     set-function start-kafka $startfunc
     set-function stop-kafka $stopfunc
+    set-alias exec-kafka $execfunc
+    set-alias kafka-start start-kafka
+    set-alias kafka-stop stop-kafka
 }

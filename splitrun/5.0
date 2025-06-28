@@ -36,7 +36,9 @@ set expose [list\
   mcstas-antlr \
   mccode-antlr \
   mcrun-antlr \
-  splitrun-nexus \
+  mp-splitrun \
+  mp-nexus-splitrun \
+  mp-nexus-services \
   mp-epics-update \
   mp-register-topics \
   mp-writer-list \
@@ -55,3 +57,14 @@ set expose [list\
 foreach name $expose {
   make_alias $name
 }
+
+switch -- [module-info shelltype] {
+{sh} {
+  set appfunc [format {apptainer run %s $@} $tainer]
+  }
+}
+# define function if current shell supports shell function
+if {[info exists appfunc]} {
+    set-function stackrun $appfunc
+}
+
