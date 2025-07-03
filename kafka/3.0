@@ -32,7 +32,7 @@ switch -- [module-info shelltype] {
       *) echo "Programming error"; exit 3 ;;
     esac
   done
-  apptainer instance run --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
+  apptainer instance start --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
   } $tainer $instance]
   set stopfunc [format "apptainer instance stop %s" $instance]
   set execfunc [format "apptainer instance instance://%s" $instance]
