@@ -24,11 +24,6 @@ proc app_flags {} {
   return $flag
 }
 
-proc make_alias {to} {
-  global tainer
-  set-alias $to [format {apptainer exec %s %s %s} [app_flags] $tainer $to]
-}
-
 # only expose a subset of the binaries/python-entrypoints
 # defined in the included programs
 set expose [list\
@@ -54,17 +49,20 @@ set expose [list\
   readout-replay \
 ]
 
-foreach name $expose {
-  make_alias $name
-}
-
 switch -- [module-info shelltype] {
 {sh} {
   set appfunc [format {apptainer run %s $@} $tainer]
+  proc make_func {to} {
+    global tainer
+    set-function $to [format {apptainer exec %s %s %s $@} [app_flags] $tainer $to]
+  }
   }
 }
 # define function if current shell supports shell function
 if {[info exists appfunc]} {
-    set-function stackrun $appfunc
+  set-function stackrun $appfunc
+  foreach name $expose {
+    make_func $name
+  }
 }
 
