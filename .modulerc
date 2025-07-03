@@ -1,3 +1,3 @@
 #%Module
-module-hide kafka
-module-hide splitrun
+module-hide stacktainer/kafka
+module-hide stacktainer/splitrun
