@@ -21,7 +21,7 @@ apptainer pull oras://ghcr.io/g5t/stacktainer/kafka:3.0
 The modulefile defined in this repository is intended to be the gateway to _using_ the full stack `splitrun`.
 
 ```cmd
-module load stacktainer/1.0
+module load stacktainer/1.1
 ```
 
 The `kafka` module file provides two commands (under `sh`-like shells only, at the moment) to `start-kafka` and `stop-kafka`.
