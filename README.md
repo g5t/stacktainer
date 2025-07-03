@@ -13,7 +13,7 @@ Images are defined and built in their associated repositories
 Built images are hosted by Github, and can be retrieved via, e.g.,
 
 ```cmd
-apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:5.1
+apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:5.5
 apptainer pull oras://ghcr.io/g5t/stacktainer/kafka:3.0
 ```
 
