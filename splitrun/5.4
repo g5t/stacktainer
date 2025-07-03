@@ -25,8 +25,15 @@ proc app_flags {} {
 }
 
 # only expose a subset of the binaries/python-entrypoints
-# defined in the included programs
-set expose [list\
+
+# Anything exposed as a function can be used by subshells,
+# e.g., a bash script executed from a module-loaded shell
+# will be able to access these.
+# BUT 'system' call methods, which launch a new shell
+# (Linux system(3) called from, e.g., C, 
+#  Python's subprocess.run({str}, shell=True), etc.) 
+# Will NOT be able to use these programs.
+set expose_via_func [list\
   python \
   mcstas-antlr \
   mccode-antlr \
@@ -34,7 +41,6 @@ set expose [list\
   mp-splitrun \
   mp-nexus-splitrun \
   mp-nexus-services \
-  mp-epics-update \
   mp-register-topics \
   mp-writer-list \
   mp-writer-kill \
@@ -48,7 +54,18 @@ set expose [list\
   readout-config \
   readout-replay \
 ]
+# Any program exposed via an alias, however,
+# can not be called from a subshell but CAN
+# be called via the system call method?!
+set expose_via_alias [list mp-epics-update]
 
+
+# Define functions so that we can employ loops
+proc make_alias {to} {
+  global tainer
+  set-alias $to [format {apptainer exec %s %s %s} [app_flags] $tainer $to]
+}
+# function definitions are shelltype dependent
 switch -- [module-info shelltype] {
 {sh} {
   set appfunc [format {apptainer run %s $@} $tainer]
@@ -58,10 +75,19 @@ switch -- [module-info shelltype] {
   }
   }
 }
-# define function if current shell supports shell function
+
+# Loop over the to-be-exposed function names and call the appropriate proc
+foreach name $expose_via_alias {
+  make_alias $name
+}
+
+# define functions if current shell supports shell function and we
+# defined the process to call shell-function
 if {[info exists appfunc]} {
+  # A utility function to run anything in the image
   set-function stackrun $appfunc
-  foreach name $expose {
+  # loop over the names to expose as functions
+  foreach name $expose_via_func {
     make_func $name
   }
 }
