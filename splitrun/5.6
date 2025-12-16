@@ -1,0 +1,94 @@
+#%Module
+
+variable thisLocation [file normalize [info script]]
+proc getResourcePath {resource} {
+  return "/apps/containers/bin/stacktainer/${resource}"
+}
+proc getImagePath {} {
+  variable thisLocation
+  set ver [file tail $thisLocation]
+  set name [file tail [file dirname $thisLocation]]
+  return [getResourcePath "${name}_${ver}.sif"]
+}
+# the absolute path to the image file, to allow alias-use from anywhere
+set tainer [getImagePath]
+
+proc app_flags {} {
+  set flag {--env RESTAGE_FIXED=${RESTAGE_FIXED}}
+  if { [info exists ::env(RESTAGE_FIXED)] } {
+    set flag [format {--env RESTAGE_FIXED=%s} $::env(RESTAGE_FIXED)]
+  }
+  if { [info exists ::env(BIND)] } {
+    set flag [format {%s --bind %s} $flag $::env(BIND)]
+  }
+  return $flag
+}
+
+# only expose a subset of the binaries/python-entrypoints
+
+# Anything exposed as a function can be used by subshells,
+# e.g., a bash script executed from a module-loaded shell
+# will be able to access these.
+# BUT 'system' call methods, which launch a new shell
+# (Linux system(3) called from, e.g., C, 
+#  Python's subprocess.run({str}, shell=True), etc.) 
+# Will NOT be able to use these programs.
+set expose_via_func [list\
+  python \
+  mcstas-antlr \
+  mccode-antlr \
+  mcrun-antlr \
+  mp-splitrun \
+  mp-nexus-splitrun \
+  mp-nexus-services \
+  mp-register-topics \
+  mp-writer-list \
+  mp-writer-kill \
+  mp-writer-killall \
+  mccode-to-kafka \
+  splitrun \
+  mcpltool \
+  mcpl-config \
+  ncrystal-mcstasunion \
+  ncrystal-config \
+  readout-config \
+  readout-replay \
+]
+# Any program exposed via an alias, however,
+# can not be called from a subshell but CAN
+# be called via the system call method?!
+set expose_via_alias [list mp-epics-update]
+
+
+# Define functions so that we can employ loops
+proc make_alias {to} {
+  global tainer
+  set-alias $to [format {apptainer exec %s %s %s} [app_flags] $tainer $to]
+}
+# function definitions are shelltype dependent
+switch -- [module-info shelltype] {
+{sh} {
+  set appfunc [format {apptainer run %s $@} $tainer]
+  proc make_func {to} {
+    global tainer
+    set-function $to [format {apptainer exec %s %s %s $@} [app_flags] $tainer $to]
+  }
+  }
+}
+
+# Loop over the to-be-exposed function names and call the appropriate proc
+foreach name $expose_via_alias {
+  make_alias $name
+}
+
+# define functions if current shell supports shell function and we
+# defined the process to call shell-function
+if {[info exists appfunc]} {
+  # A utility function to run anything in the image
+  set-function stackrun $appfunc
+  # loop over the names to expose as functions
+  foreach name $expose_via_func {
+    make_func $name
+  }
+}
+
