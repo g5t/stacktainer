@@ -1,13 +1,25 @@
 #%Module
 
 variable thisLocation [file normalize [info script]]
+# Where the images are: $STACKTAINER_IMAGES if set, else where VISA keeps them.
 proc getResourcePath {resource} {
-  return "/apps/containers/bin/stacktainer/${resource}"
+  set dir /apps/containers/bin/stacktainer
+  if { [info exists ::env(STACKTAINER_IMAGES)] } {
+    set dir $::env(STACKTAINER_IMAGES)
+  }
+  return [file join $dir $resource]
 }
+# An extracted sandbox, {name}_{ver}/, is preferred over {name}_{ver}.sif. A SIF
+# is mounted through FUSE, which some hosts (containers, mostly) do not have;
+# `unsquashfs -d {name}_{ver} {name}_{ver}.sif` makes a sandbox that needs none.
 proc getImagePath {} {
   variable thisLocation
   set ver [file tail $thisLocation]
   set name [file tail [file dirname $thisLocation]]
+  set sandbox [getResourcePath "${name}_${ver}"]
+  if { [file isdirectory $sandbox] } {
+    return $sandbox
+  }
   return [getResourcePath "${name}_${ver}.sif"]
 }
 
@@ -32,7 +44,11 @@ switch -- [module-info shelltype] {
       *) echo "Programming error"; exit 3 ;;
     esac
   done
-  apptainer instance start --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} --writable-tmpfs %s %s
+  # --cleanenv: the broker needs nothing from the host, and a host JAVA_HOME (conda
+  # sets one) would point kafka-run-class at a java the image does not have.
+  # KAFKA_STORAGE_DIR, when set, moves the data off /dev/shm -- containerised hosts
+  # often have only 64 MiB there.
+  apptainer instance start --cleanenv --env BROKER_PORT=${broker} --env CONTROLLER_PORT=${controller} ${KAFKA_STORAGE_DIR:+--env KAFKA_STORAGE_DIR=$KAFKA_STORAGE_DIR} --writable-tmpfs %s %s
   } $tainer $instance]
   set stopfunc [format "apptainer instance stop %s" $instance]
   set execfunc [format "apptainer instance instance://%s" $instance]
