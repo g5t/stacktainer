@@ -13,7 +13,7 @@ Images are defined and built in their associated repositories
 Built images are hosted by Github, and can be retrieved via, e.g.,
 
 ```cmd
-apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:5.5
+apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:8.3
 apptainer pull oras://ghcr.io/g5t/stacktainer/kafka:3.0
 ```
 
@@ -43,8 +43,8 @@ A SIF is mounted through FUSE, which some hosts -- containers, mostly -- do not 
 extracting the image's filesystem partition:
 
 ```cmd
-apptainer sif dump 4 splitrun_8.0.sif > splitrun_8.0.squashfs
-unsquashfs -no-xattrs -d splitrun_8.0 splitrun_8.0.squashfs
+apptainer sif dump 4 splitrun_8.3.sif > splitrun_8.3.squashfs
+unsquashfs -no-xattrs -d splitrun_8.3 splitrun_8.3.squashfs
 ```
 
 `BIND` defaults to VISA's filesystems; entries that do not exist on the host are dropped
