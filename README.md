@@ -13,15 +13,15 @@ Images are defined and built in their associated repositories
 Built images are hosted by Github, and can be retrieved via, e.g.,
 
 ```cmd
-apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:8.3
-apptainer pull oras://ghcr.io/g5t/stacktainer/kafka:3.0
+apptainer pull oras://ghcr.io/g5t/stacktainer/splitrun:9.5
+apptainer pull oras://ghcr.io/g5t/stacktainer/kafka:3.1
 ```
 
 # Use
 The modulefile defined in this repository is intended to be the gateway to _using_ the full stack `splitrun`.
 
 ```cmd
-module load stacktainer/1.1
+module load stacktainer/1.2
 ```
 
 The `kafka` module file provides two commands (under `sh`-like shells only, at the moment) to `start-kafka` and `stop-kafka`.
@@ -35,7 +35,7 @@ be on `MODULEPATH`, since the modules are named `stacktainer/...`:
 ```cmd
 module use /path/to/parent/of/stacktainer
 export STACKTAINER_IMAGES=/path/to/images
-module load stacktainer/1.1
+module load stacktainer/1.2
 ```
 
 A SIF is mounted through FUSE, which some hosts -- containers, mostly -- do not provide. If
@@ -43,8 +43,8 @@ A SIF is mounted through FUSE, which some hosts -- containers, mostly -- do not 
 extracting the image's filesystem partition:
 
 ```cmd
-apptainer sif dump 4 splitrun_8.3.sif > splitrun_8.3.squashfs
-unsquashfs -no-xattrs -d splitrun_8.3 splitrun_8.3.squashfs
+apptainer sif dump 4 splitrun_9.5.sif > splitrun_9.5.squashfs
+unsquashfs -no-xattrs -d splitrun_9.5 splitrun_9.5.squashfs
 ```
 
 `BIND` defaults to VISA's filesystems; entries that do not exist on the host are dropped
