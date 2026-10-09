@@ -49,3 +49,7 @@ unsquashfs -no-xattrs -d splitrun_9.7 splitrun_9.7.squashfs
 
 `BIND` defaults to VISA's filesystems; entries that do not exist on the host are dropped
 rather than stopping the container from starting.
+
+`stacktainer/splitrun` sets Open MPI to single-host shared memory (`OMPI_MCA_pml=ob1`,
+`OMPI_MCA_btl=self,vader`, segments in `/tmp`) without core binding, because UCX crashed
+starting 64 ranks. Export any of these before loading the module to override them.

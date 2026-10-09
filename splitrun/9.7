@@ -46,6 +46,19 @@ if { [info exists ::env(SPLITRUN_CACHE_HOME)] && [module-info mode load] } {
   }
 }
 
+# Open MPI on one host: ob1 over shared memory instead of UCX. UCX also wires every
+# pair of ranks over loopback TCP; on VISA (64 cores), after 8 back-to-back launches
+# -- restage starts one per simulation pass -- its connects failed ("Cannot assign
+# requested address") and MPI_Init aborted. In a container with a small /dev/shm it
+# segfaulted in its shared-memory setup instead. ob1 cut VISA's time per point from
+# 7.4 s to 4.5 s too. vader keeps its segments in /tmp, not a /dev/shm that may be
+# small. No pinning, so concurrent mpiruns do not all bind to the same cores.
+# apptainer passes these through; export your own to override.
+setenv --set-if-undef OMPI_MCA_pml ob1
+setenv --set-if-undef OMPI_MCA_btl self,vader
+setenv --set-if-undef OMPI_MCA_btl_vader_backing_directory /tmp
+setenv --set-if-undef OMPI_MCA_hwloc_base_binding_policy none
+
 proc app_flags {} {
   set flag {--env RESTAGE_FIXED=${RESTAGE_FIXED}}
   if { [info exists ::env(RESTAGE_FIXED)] } {
